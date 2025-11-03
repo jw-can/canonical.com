@@ -156,40 +156,22 @@
 
   // Update browser url updateUrl
   function updateUrl(type, value) {
-    const currentUrl = window.location.href;
-    const baseUrl = currentUrl.split("?")[0];
-    var newUrl = baseUrl;
+    const baseUrl = window.location.href.split("?")[0];
+    const params = new URLSearchParams();
+    const searchValue = searchBox.value.trim();
 
-    if (!(searchBox.value === "") && filters.length > 0) {
-      filtersString = "";
-      filters.forEach((filter, i) => {
-        if (i === filters.length - 1) {
-          filtersString += filter;
-        } else {
-          filtersString += `${filter},`;
-        }
-      });
-      newUrl = `${baseUrl}?search=${searchBox.value}&filters=${filtersString}`;
+    if (searchValue) {
+      params.set("search", searchValue);
     }
-    if (!(searchBox.value === "") && filters.length === 0) {
-      newUrl = `${baseUrl}?search=${searchBox.value}`;
+
+    if (filters.length > 0) {
+      params.set("filters", filters.join(","));
     }
-    if (searchBox.value === "" && filters.length > 0) {
-      filtersString = "";
-      filters.forEach((filter, i) => {
-        if (i === filters.length - 1) {
-          filtersString += filter;
-        } else {
-          filtersString += `${filter},`;
-        }
-      });
-      newUrl = `${baseUrl}?filters=${filtersString}`;
-    }
-    window.history.pushState(
-      { search: searchBox.value, filters: filters },
-      "",
-      newUrl
-    );
+
+    const queryString = params.toString();
+    const newUrl = queryString ? `${baseUrl}?${queryString}` : baseUrl;
+
+    window.history.pushState({ search: searchValue, filters: filters }, "", newUrl);
   }
 
   // Retain checked filters on page load
